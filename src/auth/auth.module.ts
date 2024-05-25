@@ -7,24 +7,44 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from 'src/modules/user-module/user.module';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { LocalStrategy } from './local.strategy';
-import { GoogleModule } from './google-auth/google.module';
+import { JwtRefreshStrategy } from './jwt-refresh.strategy';
+import { PasswordService } from './password-service/password.service';
+import { GoogleStrategy } from './google-auth/google.strategy';
+import { GoogleService } from './google-auth/google.service';
+import { SessionSerializer } from './google-auth/session.serializer';
+import { GoogleController } from './google-auth/google.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/database/entities/user.entity';
 
 
 @Module({
     imports: [
-        UserModule, 
-        PassportModule,
         JwtModule.register({}),
-        GoogleModule
+        PassportModule.register({ session: true }),
+        TypeOrmModule.forFeature([User])
     ],
-    controllers: [AuthController],
+    controllers: [AuthController,GoogleController],
     providers: [
         AuthService,
         JwtStrategy,
         LocalStrategy,
+        JwtRefreshStrategy,
+        {
+            provide: 'PasswordInterface',
+            useClass: PasswordService
+        },
+        GoogleStrategy, 
+        GoogleService,
+        SessionSerializer,
+        JwtService
     ],
+    exports : [
+        AuthService,
+        LocalStrategy,
+        JwtStrategy
+    ]
 })
 export class AuthModule { }

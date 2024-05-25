@@ -11,29 +11,22 @@ import { CreateAccountDTO } from "src/dtos/createaccount.dto";
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
-        private readonly jwtService: JwtService,
     ) { }
 
     @Post('sign-in')
     @UseGuards(AuthGuard('local'))
-    signIn(@Req() req: Request) {
-        console.log("REQ : ",req.user);
-        try {
-            const user = req.user;
-            if (!user || typeof user !== 'object') {
-                throw new Error('Invalid user data');
-            }
-            const accessToken = this.jwtService.sign({...user},{secret:process.env.ACCESS_TOKEN_SECRET});
-            return { accessToken };
-        } catch (error) {
-            throw new UnauthorizedException('Failed to sign in');
+    signIn(@Req() req) {
+        const accessToken = this.authService.generateAccessToken({userId : req.user.id});
+        const refreshToken = this.authService.generateRefreshToken({userId : req.user.userId});
+        return {
+            accessToken,refreshToken
         }
     }
 
     @Get('test')
     @UseGuards(AuthGuard('jwt'))
-    testApi(@GetUser() user) {
-        return user;
+    testApi(@Body() body :  {hello:string}) {
+        return "Hello " + body.hello;
     }
 
     @Post('sign-up')
@@ -43,5 +36,20 @@ export class AuthController {
         return await this.authService.createNewAccount(createAccount);
     }
 
+    @Post('refresh')
+    @UseGuards(AuthGuard('refresh-token'))
+    async getRefreshToken(@Req() req)
+    {
+        const accessToken = await this.authService.generateAccessToken({
+            userId : req.user.id
+        });
+        return {accessToken};
+    }
 
+    @Post('token')
+    @UseGuards(AuthGuard('refresh-token'))
+    async getAccessToken(@Req() req)
+    {
+        
+    }
 }

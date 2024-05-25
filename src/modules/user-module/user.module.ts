@@ -7,21 +7,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/database/entities/user.entity';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
-import { UserService } from './user.service';
-import { PasswordService } from 'src/modules/user-module/password-service/password.service';
+import { UserService } from './user.service'
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([User])
+        TypeOrmModule.forFeature([User]),
+        AuthModule
     ],
     controllers: [UserController],
     providers: [
         UserService, 
         UserRepository,
-        {
-            provide: 'PasswordInterface',
-            useClass: PasswordService
-        }
     ],
     exports: [UserService, UserRepository]
 })

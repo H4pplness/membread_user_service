@@ -9,6 +9,9 @@ export class User extends BaseEntity{
     @Column({unique : true})
     email : string;
 
+    @Column({name : 'user_name',nullable : true})
+    userName : string;
+
     @Column({nullable : true})
     password : string;
 
@@ -18,6 +21,8 @@ export class User extends BaseEntity{
     @Column({name : 'last_name',nullable : true})
     lastName : string;
 
-    @Column({name : 'refresh_token'})
-    refreshToken : string;
+    @Column({name : 'avatar' , nullable :true})
+    avatar : string;
+
+    
 }

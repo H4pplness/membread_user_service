@@ -1,10 +1,14 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "src/database/entities/user.entity";
+import { MappingGoogleAccount } from "src/dtos/mappinggoogleaccount.dto";
 import { UserRepository } from "src/modules/user-module/user.repository";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class GoogleService {
     constructor(
-        private readonly userRepository : UserRepository
+        @InjectRepository(User) private readonly userRepository : Repository<User>
     ) {}
     async validateUser(email: string, firstName: string,lastName : string) {
         const user = await this.userRepository.findOne({ where: { email: email } });
@@ -12,9 +16,23 @@ export class GoogleService {
         if (user) {
             return user;
         }
-        const newUser = await this.userRepository.mappingGoogleAccount({ email,  firstName , lastName});
+        const newUser = await this.mappingGoogleAccount({ email,  firstName , lastName});
         
         return newUser;
+    }
+
+    async mappingGoogleAccount(mappingGoogleAccount: MappingGoogleAccount) {
+        try {
+            const googleAccount = new User();
+            console.log("Mapping google account : ",mappingGoogleAccount);
+            googleAccount.firstName = mappingGoogleAccount.firstName;
+            googleAccount.lastName = mappingGoogleAccount.lastName;
+            googleAccount.email = mappingGoogleAccount.email;
+            googleAccount.save()
+            return googleAccount;
+        } catch (error) {
+            throw new ConflictException(error);
+        }
     }
 
     async findUser(id: string) {
