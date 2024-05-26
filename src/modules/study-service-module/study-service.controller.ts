@@ -30,6 +30,11 @@ export class StudyServiceController {
         return this.courseInfoService.getCourseInfo(courseId,req.user.userId);
     }
 
+    @Get('/course/popular')
+    getPopularCourse(){
+        return this.courseInfoService.getPopularCourse();
+    }
+
     @Get('/course/learning')
     @UseGuards(AuthGuard('jwt'))
     getLearningCourse(@Req() req){
@@ -51,8 +56,9 @@ export class StudyServiceController {
 
     @Post('/course/add-lesson-vocabulary')
     @UseGuards(AuthGuard('jwt'))
-    createLesson(@Body() createLesson : CreateLessonVocabularyDTO){
-        return this.vocabularyService.createLessonVocabulary(createLesson);
+    async createLesson(@Body() createLesson : CreateLessonVocabularyDTO,@Req() req){
+        createLesson.authorId = req.user.userId;
+        return await this.vocabularyService.createLessonVocabulary(createLesson);
     }
 
     @Get('/course/vocabulary-lesson')
@@ -60,5 +66,13 @@ export class StudyServiceController {
     getVocabularyLesson(@Req() req,@Query('lesson_id') lessonId)
     {
         return this.vocabularyService.getLessonVocabulary(lessonId,req.user.userId);
+    }
+
+    @Get('/course/join')
+    @UseGuards(AuthGuard('jwt'))
+    joinCourse(@Req() req, @Query('course_id') courseId)
+    {
+        console.log(req.user);
+        return this.courseInfoService.joinCourse(courseId,req.user.userId);
     }
 }

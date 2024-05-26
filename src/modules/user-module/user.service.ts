@@ -22,6 +22,22 @@ export class UserService{
         })
     }
 
+    async getLoginedUser(userId : string){
+        return await this.userRepository.findOne({
+            select : {
+                "firstName" : true,
+                "lastName" : true,
+                "avatar" : true,
+                "email" : true,
+                "id" : true
+            },
+            where : {
+                id : userId
+            }
+        });
+    }
+
+
     async getUserInfoFromKafka(userId : string)
     {
 
@@ -29,6 +45,6 @@ export class UserService{
 
     async editUserInfo()
     {
-        
+
     }
 }

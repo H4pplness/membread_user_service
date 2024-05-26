@@ -1,8 +1,6 @@
-import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Query, Req, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { User } from "src/database/entities/user.entity";
 import { UserService } from "./user.service";
-import { use } from "passport";
 import { MessagePattern } from "@nestjs/microservices";
 
 @Controller('user')
@@ -18,11 +16,11 @@ export class UserController {
         return await this.userService.getInfo(userId);
     }
 
-    @Get('all-info')
+    @Get('logined')
     @UseGuards(AuthGuard('jwt'))
-    getAllInfo()
+    async getAllInfo(@Req() req)
     {
-        return "HEllo world";
+        return await this.userService.getLoginedUser(req.user.userId);
     }
 
     @MessagePattern('get-user-info')

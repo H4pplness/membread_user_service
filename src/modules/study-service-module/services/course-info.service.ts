@@ -11,6 +11,8 @@ export class CourseInfoService implements OnModuleInit{
         this.kafkaClient.subscribeToResponseOf('learning-courses');
         this.kafkaClient.subscribeToResponseOf('teaching-courses');
         this.kafkaClient.subscribeToResponseOf('create-course');
+        this.kafkaClient.subscribeToResponseOf('popular-courses');
+        this.kafkaClient.subscribeToResponseOf('join-course');
         await this.kafkaClient.connect();
     }
 
@@ -30,6 +32,13 @@ export class CourseInfoService implements OnModuleInit{
         return await lastValueFrom(this.kafkaClient.send('create-course',{createCourse,userId}));
     }
 
+    async getPopularCourse() {
+        return await lastValueFrom(this.kafkaClient.send('popular-courses',{}));
+    }
 
+    async joinCourse(courseId: number, userId: string) {
+        console.log("USER ID :",userId);
+        return await lastValueFrom(this.kafkaClient.send('join-course',{participant_id : userId,course_id : courseId}));
+    }
     
 }

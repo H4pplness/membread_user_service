@@ -17,7 +17,7 @@ export class AuthController {
     @UseGuards(AuthGuard('local'))
     signIn(@Req() req) {
         const accessToken = this.authService.generateAccessToken({userId : req.user.id});
-        const refreshToken = this.authService.generateRefreshToken({userId : req.user.userId});
+        const refreshToken = this.authService.generateRefreshToken({userId : req.user.id});
         return {
             accessToken,refreshToken
         }
@@ -40,8 +40,9 @@ export class AuthController {
     @UseGuards(AuthGuard('refresh-token'))
     async getRefreshToken(@Req() req)
     {
+        console.log("REQ : ",req.user);
         const accessToken = await this.authService.generateAccessToken({
-            userId : req.user.id
+            userId : req.user.userId
         });
         return {accessToken};
     }
