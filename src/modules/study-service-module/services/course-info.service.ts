@@ -1,8 +1,9 @@
-import { Inject, OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
 import { lastValueFrom } from "rxjs";
 import { CreateCourseDTO } from "src/dtos/createcourse.dto";
 
+@Injectable()
 export class CourseInfoService implements OnModuleInit{
     constructor(@Inject('STUDY_SERVICE') private readonly kafkaClient : ClientKafka){}
 

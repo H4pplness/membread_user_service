@@ -4,6 +4,8 @@ import { AuthGuard } from "@nestjs/passport";
 import { CreateLessonVocabularyDTO } from "src/dtos/create-lessons/createlessonvocabulary.dto";
 import { VocabularyService } from "./services/lesson-services/vocabulary.service";
 import { CreateCourseDTO } from "src/dtos/createcourse.dto";
+import { UpdateProgressLessonDTO } from "src/dtos/updare-progress-lesson/updateprogresslesson.dto";
+import { UpdateProgressLessonVocabularyDTO } from "src/dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto";
 
 @Controller('/study')
 export class StudyServiceController {
@@ -74,5 +76,12 @@ export class StudyServiceController {
     {
         console.log(req.user);
         return this.courseInfoService.joinCourse(courseId,req.user.userId);
+    }
+
+    @Post('/course/update-progress/vocabulary-lesson')
+    @UseGuards(AuthGuard('jwt'))
+    updateProgress(@Req() req , @Body() updateProgress : UpdateProgressLessonVocabularyDTO){
+        updateProgress.user_id = req.user.userId;
+        return this.vocabularyService.updateProgressVocabularyLesson(updateProgress);
     }
 }

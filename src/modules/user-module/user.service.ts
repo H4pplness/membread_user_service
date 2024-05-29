@@ -1,29 +1,39 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { UserRepository } from "./user.repository";
 import { ClientKafka } from "@nestjs/microservices";
+import { HonorService } from "../achievement-service-module/services/honor.service";
+import { ScoreService } from "../achievement-service-module/services/score.service";
 
 @Injectable()
-export class UserService{
+export class UserService {
     constructor(
         private readonly userRepository : UserRepository,
+        private readonly honorService : HonorService,
+        private readonly scoreService : ScoreService,
     ){}
-
     async getInfo(userId : string)
     {
-        return await this.userRepository.findOne({
+        var userInfo = await this.userRepository.findOne({
             select : {
                 "firstName" : true,
                 "lastName" : true,
-                "avatar" : true
+                "avatar" : true,
+                "id" : true
             },
             where : {
                 id : userId
             }
-        })
+        });
+
+        const totalScore = await this.scoreService.getTotalScore(userId);
+        const honors = await this.honorService.getHonor(userId);
+
+        const combineInfo  = {...userInfo, totalScore,honors};
+        return combineInfo;
     }
 
     async getLoginedUser(userId : string){
-        return await this.userRepository.findOne({
+        const userInfo = await this.userRepository.findOne({
             select : {
                 "firstName" : true,
                 "lastName" : true,
@@ -35,16 +45,12 @@ export class UserService{
                 id : userId
             }
         });
+
+        const totalScore = await this.scoreService.getTotalScore(userId);
+        const honors = await this.honorService.getHonor(userId);
+
+        const combineInfo  = {...userInfo, totalScore,honors};
+        return combineInfo;
     }
 
-
-    async getUserInfoFromKafka(userId : string)
-    {
-
-    }
-
-    async editUserInfo()
-    {
-
-    }
 }

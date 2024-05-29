@@ -2,6 +2,7 @@ import { Body, Inject, OnModuleInit } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
 import { lastValueFrom } from "rxjs";
 import { CreateLessonVocabularyDTO } from "src/dtos/create-lessons/createlessonvocabulary.dto";
+import { UpdateProgressLessonVocabularyDTO } from "src/dtos/updare-progress-lesson/updateprogresslessonvocabulary.dto";
 
 export class VocabularyService implements OnModuleInit{
     constructor(@Inject('STUDY_SERVICE') private readonly kafkaClient : ClientKafka){}
@@ -23,5 +24,10 @@ export class VocabularyService implements OnModuleInit{
     async getLessonVocabulary(lessonId : number,userId : number)
     {
         return await lastValueFrom(this.kafkaClient.send('get-lesson-vocabulary',{lessonId,userId}));
-    }    
+    }
+    
+    async updateProgressVocabularyLesson(updateProgress : UpdateProgressLessonVocabularyDTO)
+    {
+        return await lastValueFrom(this.kafkaClient.send('update-progress-vocabulary-lesson',{updateProgress}))
+    }
 }

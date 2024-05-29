@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { PostGresModule } from './database/postgres/postgres.module';
 import { StudyServiceModule } from './modules/study-service-module/study-service.module';
+import { AchievementServiceModule } from './modules/achievement-service-module/achievement-service.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { StudyServiceModule } from './modules/study-service-module/study-service
     AuthModule,
     ConfigModule.forRoot(),
     PostGresModule,
-    StudyServiceModule
+    StudyServiceModule,
+    AchievementServiceModule
   ],
   controllers: [AppController],
   providers: [AppService],
