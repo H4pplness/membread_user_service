@@ -4,6 +4,8 @@ import { AuthModule } from "src/auth/auth.module";
 import { AchievementServiceController } from "./achievement-service.controller";
 import { HonorService } from "./services/honor.service";
 import { ScoreService } from "./services/score.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User } from "src/database/entities/user.entity";
 
 @Module({
     imports:[
@@ -23,7 +25,8 @@ import { ScoreService } from "./services/score.service";
                 }
             ]
         ),
-        AuthModule
+        AuthModule,
+        TypeOrmModule.forFeature([User])
     ],
     controllers : [AchievementServiceController],
     providers : [HonorService,ScoreService],

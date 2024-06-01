@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from "@nestjs/common";
-import { MessagePattern } from "@nestjs/microservices";
+import { Body, Controller, Get, Post, Query, Req, UseGuards, UsePipes } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { HonorService } from "./services/honor.service";
 import { HONOR } from "src/dtos/honor.const";
 import { AchieveHonorDTO } from "src/dtos/achievehonor.dto";
 import { ScoreService } from "./services/score.service";
+import { LeaderBoardPipe } from "src/pipes/leader-board.pipe";
 
 @Controller('achievement')
 export class AchievementServiceController {
@@ -45,5 +45,22 @@ export class AchievementServiceController {
     async getTotalScore(@Req() req){
         const totalScore = await this.scoreService.getTotalScore(req.user.userId) ?? 0;
         return {totalScore : parseInt(totalScore)};
+    }
+
+    @Get('leader-board')
+    async getLeaderBoard(@Query('course_id') courseId:number , @Query('period',LeaderBoardPipe) period : string){
+        return this.scoreService.getLeaderBoard(courseId,period);
+    }
+
+    @Get('goal')
+    @UseGuards(AuthGuard('jwt'))
+    async getGoal(@Req() req){
+        return await this.honorServicce.getGoal(req.user.userId);
+    }
+
+    @Post('goal')
+    @UseGuards(AuthGuard('jwt'))
+    async setGoal(@Req() req,@Body() body : {goal : number}){
+        return await this.honorServicce.setGoal(req.user.userId , body.goal);
     }
 }

@@ -10,6 +10,8 @@ export class HonorService implements OnModuleInit{
     async onModuleInit() {
         this.kafkaClient.subscribeToResponseOf('get-user-honor');
         this.kafkaClient.subscribeToResponseOf('achieve-honor');
+        this.kafkaClient.subscribeToResponseOf('set-goal');
+        this.kafkaClient.subscribeToResponseOf('get-goal');
         await this.kafkaClient.connect();
     }
 
@@ -24,6 +26,15 @@ export class HonorService implements OnModuleInit{
         }catch(error){
             throw new BadRequestException(error);
         }
+    }
+
+    async setGoal(userId:string,goal:number){
+        const response = await lastValueFrom(this.kafkaClient.send('set-goal',{userId,goal}));
+        return "SUCCESS";
+    }
+
+    async getGoal(userId : string){
+        return await lastValueFrom(this.kafkaClient.send('get-goal',{userId}));
     }
 
 }

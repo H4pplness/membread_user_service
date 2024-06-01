@@ -18,7 +18,8 @@ export class UserService {
                 "firstName" : true,
                 "lastName" : true,
                 "avatar" : true,
-                "id" : true
+                "id" : true,
+                "userName" : true
             },
             where : {
                 id : userId
@@ -39,7 +40,8 @@ export class UserService {
                 "lastName" : true,
                 "avatar" : true,
                 "email" : true,
-                "id" : true
+                "id" : true,
+                "userName" : true
             },
             where : {
                 id : userId

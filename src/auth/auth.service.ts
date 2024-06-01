@@ -65,6 +65,7 @@ export class AuthService {
         newAccount.password = await this.passwordService.hashPassword(account.password);
         newAccount.firstName = account.firstName;
         newAccount.lastName = account.lastName;
+        newAccount.userName = account.username;
 
         await newAccount.save();
 

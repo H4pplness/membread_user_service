@@ -7,9 +7,12 @@ export class CreateAccountDTO {
     @IsNotEmpty()
     password : string;
 
-    @IsNotEmpty({message : 'please enter your first name'})
+    // @IsNotEmpty({message : 'please enter your first name'})
     firstName : string;
 
-    @IsNotEmpty({message : 'please enter your last name'})
+    // @IsNotEmpty({message : 'please enter your last name'})
     lastName : string;
+
+    @IsNotEmpty({message : 'please enter your username'})
+    username : string;
 }

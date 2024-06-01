@@ -10,7 +10,6 @@ import { UserRepository } from './user.repository';
 import { UserService } from './user.service'
 import { AuthModule } from 'src/auth/auth.module';
 import { AchievementServiceModule } from '../achievement-service-module/achievement-service.module';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
     imports: [
