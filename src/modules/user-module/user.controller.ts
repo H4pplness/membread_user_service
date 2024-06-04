@@ -1,7 +1,8 @@
-import { Controller, Get, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { UserService } from "./user.service";
 import { MessagePattern } from "@nestjs/microservices";
+import { UpdateUserInfoDTO } from "src/dtos/user/updateuserinfo.dto";
 
 @Controller('user')
 export class UserController {
@@ -21,6 +22,13 @@ export class UserController {
     async getAllInfo(@Req() req)
     {
         return await this.userService.getLoginedUser(req.user.userId);
+    }
+
+    @Put('update')
+    @UseGuards(AuthGuard('jwt'))
+    async updateInfo(@Req() req,@Body() updateUserInfo : UpdateUserInfoDTO)
+    {
+        return await this.userService.updateUserInfo(req.user.userId,updateUserInfo);
     }
 
     @MessagePattern('get-user-info')

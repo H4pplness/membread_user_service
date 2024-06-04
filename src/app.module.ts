@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PostGresModule } from './database/postgres/postgres.module';
 import { StudyServiceModule } from './modules/study-service-module/study-service.module';
 import { AchievementServiceModule } from './modules/achievement-service-module/achievement-service.module';
+import { UploadFileModule } from './modules/upload-file-module/upload-file.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { AchievementServiceModule } from './modules/achievement-service-module/a
     ConfigModule.forRoot(),
     PostGresModule,
     StudyServiceModule,
-    AchievementServiceModule
+    AchievementServiceModule,
+    UploadFileModule
   ],
   controllers: [AppController],
   providers: [AppService],
