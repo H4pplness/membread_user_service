@@ -24,5 +24,9 @@ export class User extends BaseEntity{
     @Column({name : 'avatar' , nullable :true})
     avatar : string;
 
-    
+    @Column({name : 'number_of_followers',default : 0})
+    numberOfFollowers : number;
+
+    @Column({name : 'number_of_followings',default : 0})
+    numberOfFollowings : number;
 }

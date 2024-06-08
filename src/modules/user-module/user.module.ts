@@ -10,12 +10,14 @@ import { UserRepository } from './user.repository';
 import { UserService } from './user.service'
 import { AuthModule } from 'src/auth/auth.module';
 import { AchievementServiceModule } from '../achievement-service-module/achievement-service.module';
+import { FollowModule } from '../follow-module/follow.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([User]),
         AuthModule,
-        AchievementServiceModule
+        AchievementServiceModule,
+        FollowModule
     ],
     controllers: [UserController],
     providers: [
