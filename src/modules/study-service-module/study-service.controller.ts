@@ -10,13 +10,18 @@ import { UpdateCourseInfoDTO } from "src/dtos/update_course_info.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
+import { LessonService } from "./services/lesson-services/lesson.service";
+import { CreateLessonTestDTO } from "src/dtos/create-lessons/createlessontest.dto";
+import { TestService } from "./services/lesson-services/test.service";
 
 @Controller('/study')
 export class StudyServiceController {
 
     constructor(
         private readonly courseInfoService: CourseInfoService,
-        private readonly vocabularyService: VocabularyService
+        private readonly vocabularyService: VocabularyService,
+        private readonly lessonService : LessonService,
+        private readonly testService : TestService
     ) { }
 
     /**
@@ -67,10 +72,18 @@ export class StudyServiceController {
         return await this.vocabularyService.createLessonVocabulary(createLesson);
     }
 
-    @Get('/course/vocabulary-lesson')
+    @Post('/course/add-lesson-test')
+    @UseGuards(AuthGuard('jwt'))
+    async createLessonTest(@Body() createLesson : CreateLessonTestDTO,@Req() req){
+        createLesson.authorId = req.user.userId;
+        console.log("DATAAA : ",createLesson);
+        return await this.testService.createLessonTest(createLesson);
+    }
+
+    @Get('/course/lesson')
     @UseGuards(AuthGuard('jwt'))
     getVocabularyLesson(@Req() req, @Query('lesson_id') lessonId) {
-        return this.vocabularyService.getLessonVocabulary(lessonId, req.user.userId);
+        return this.lessonService.getLesson(lessonId, req.user.userId);
     }
 
     @Post('/course/join')

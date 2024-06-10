@@ -5,6 +5,8 @@ import { StudyServiceController } from "./study-service.controller";
 import { CourseInfoService } from "./services/course-info.service";
 import { VocabularyService } from "./services/lesson-services/vocabulary.service";
 import { UploadFileModule } from "../upload-file-module/upload-file.module";
+import { LessonService } from "./services/lesson-services/lesson.service";
+import { TestService } from "./services/lesson-services/test.service";
 
 @Module({
     imports : [
@@ -27,7 +29,7 @@ import { UploadFileModule } from "../upload-file-module/upload-file.module";
         AuthModule,
         UploadFileModule
     ],
-    providers : [CourseInfoService,VocabularyService],
+    providers : [CourseInfoService,VocabularyService,LessonService,TestService],
     controllers : [StudyServiceController]
 })
 export class StudyServiceModule {

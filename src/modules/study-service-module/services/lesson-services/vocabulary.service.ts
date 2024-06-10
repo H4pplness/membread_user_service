@@ -9,22 +9,18 @@ export class VocabularyService implements OnModuleInit{
     
     async onModuleInit() {
         this.kafkaClient.subscribeToResponseOf('create-lesson-vocabulary');
-        this.kafkaClient.subscribeToResponseOf('get-lesson-vocabulary');
         this.kafkaClient.subscribeToResponseOf('review-vocabulary-lesson');
         this.kafkaClient.subscribeToResponseOf('study-vocabulary-lesson');
         this.kafkaClient.subscribeToResponseOf('update-progress-vocabulary-lesson');
         await this.kafkaClient.connect();    
     }
     
-    async createLessonVocabulary(@Body() createLessonVocabulary: CreateLessonVocabularyDTO)
+    async createLessonVocabulary(createLessonVocabulary: CreateLessonVocabularyDTO)
     {
         return await lastValueFrom(this.kafkaClient.send('create-lesson-vocabulary',{createLessonVocabulary}));
     }
 
-    async getLessonVocabulary(lessonId : number,userId : number)
-    {
-        return await lastValueFrom(this.kafkaClient.send('get-lesson-vocabulary',{lessonId,userId}));
-    }
+    
     
     async updateProgressVocabularyLesson(updateProgress : UpdateProgressLessonVocabularyDTO)
     {

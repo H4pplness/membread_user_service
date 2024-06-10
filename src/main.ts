@@ -5,6 +5,7 @@ import * as session from 'express-session';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import * as express from 'express';
 import { join } from 'path';
+import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
 
   const kafkaMicroservice = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -31,6 +32,8 @@ async function bootstrap() {
   app.use(passport.initialize())
 
   app.use(passport.session())
+
+  app.useGlobalPipes(new ValidationPipe());
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads'))); // setup static path for file storage
 
