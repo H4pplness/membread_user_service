@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
 @Entity({ name: 'notification_token' })
@@ -15,4 +15,7 @@ export class NotificationToken {
 
     @Column()
     device_type : string;
+
+    @DeleteDateColumn({name : 'delete_at',nullable : true})
+    deleteAt : Date;
 }

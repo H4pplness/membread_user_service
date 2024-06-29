@@ -3,7 +3,6 @@ import { ClientKafka } from "@nestjs/microservices";
 import { lastValueFrom } from "rxjs";
 import { CreateCourseDTO } from "src/dtos/createcourse.dto";
 import { UpdateCourseInfoDTO } from "src/dtos/update_course_info.dto";
-import { UploadCourseAvatarDTO } from "src/dtos/uploadcourseavatar.dto";
 import { UploadFileService } from "src/modules/upload-file-module/upload-file.service";
 
 @Injectable()

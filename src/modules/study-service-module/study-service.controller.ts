@@ -13,6 +13,7 @@ import { extname } from "path";
 import { LessonService } from "./services/lesson-services/lesson.service";
 import { CreateLessonTestDTO } from "src/dtos/create-lessons/createlessontest.dto";
 import { TestService } from "./services/lesson-services/test.service";
+import { CacheInterceptor, CacheKey, CacheTTL } from "@nestjs/cache-manager";
 
 @Controller('/study')
 export class StudyServiceController {
@@ -20,8 +21,8 @@ export class StudyServiceController {
     constructor(
         private readonly courseInfoService: CourseInfoService,
         private readonly vocabularyService: VocabularyService,
-        private readonly lessonService : LessonService,
-        private readonly testService : TestService
+        private readonly lessonService: LessonService,
+        private readonly testService: TestService
     ) { }
 
     /**
@@ -42,6 +43,9 @@ export class StudyServiceController {
 
     @Get('/course/popular')
     @UseGuards(AuthGuard('jwt'))
+    @UseInterceptors(CacheInterceptor)
+    @CacheKey('popular_courses')
+    @CacheTTL(3600) // TTL (Time to Live) là 60 giây
     getPopularCourse(@Req() req) {
         return this.courseInfoService.getPopularCourse(req.user.userId);
     }
@@ -74,9 +78,9 @@ export class StudyServiceController {
 
     @Post('/course/add-lesson-test')
     @UseGuards(AuthGuard('jwt'))
-    async createLessonTest(@Body() createLesson : CreateLessonTestDTO,@Req() req){
+    async createLessonTest(@Body() createLesson: CreateLessonTestDTO, @Req() req) {
         createLesson.authorId = req.user.userId;
-        console.log("DATAAA : ",createLesson);
+        console.log("DATAAA : ", createLesson);
         return await this.testService.createLessonTest(createLesson);
     }
 
@@ -122,15 +126,14 @@ export class StudyServiceController {
             }
         })
     }))
-    async uploadCourseAvatar(@UploadedFile() file: Express.Multer.File,@Req() req,@Query('course_id') courseId : number)
-    {
-        console.log("USERID : ",req.user.userId);
-        console.log("COURSEID : ",courseId);
-        const response = await this.courseInfoService.uploadAvatarCourse(req.user.userId,courseId,file);
-        if(response.statusCode == 400){
+    async uploadCourseAvatar(@UploadedFile() file: Express.Multer.File, @Req() req, @Query('course_id') courseId: number) {
+        console.log("USERID : ", req.user.userId);
+        console.log("COURSEID : ", courseId);
+        const response = await this.courseInfoService.uploadAvatarCourse(req.user.userId, courseId, file);
+        if (response.statusCode == 400) {
             throw new BadRequestException();
         }
-        if(response.statusCode == 404){
+        if (response.statusCode == 404) {
             throw new NotFoundException();
         }
 

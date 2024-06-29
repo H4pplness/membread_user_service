@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import * as admin from 'firebase-admin';
 import * as serviceAccount from './fcm-config.json';
 import { SendingNotificationDTO } from '../../dtos/sendingnotification.dto';
@@ -6,8 +6,11 @@ import { CronJob } from "cron";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { NotificationRepository } from "./notification.repository";
 import { Notification } from "src/database/entities/notification.entity";
-import { Between } from "typeorm";
+import { Between, Repository } from "typeorm";
 import { User } from "src/database/entities/user.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { NotificationToken } from "src/database/entities/notification-token.entity";
+import { ScheduleNotification } from "src/database/entities/schedule-notification.entity";
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as admin.ServiceAccount)
@@ -16,7 +19,9 @@ admin.initializeApp({
 export class NotificationService {
     constructor(
         private schedulerRegistry: SchedulerRegistry,
-        private notificationRepository : NotificationRepository
+        private notificationRepository : NotificationRepository,
+        @InjectRepository(NotificationToken) private readonly notificationTokenRepository : Repository<NotificationToken>,
+        @InjectRepository(ScheduleNotification) private scheduleRepository : Repository<ScheduleNotification>
     ) {
     }
 
@@ -98,7 +103,9 @@ export class NotificationService {
 
     async createScheduledDate(token: string, createSchedule: SendingNotificationDTO,userId : string) {
         const schedule = await this.notificationRepository.createScheduledNotification(createSchedule,userId);
+        // const tokenNotification = await this.notificationTokenRepository.find({
 
+        // })
         const payload = {
             token: token,
             notification: {
@@ -148,5 +155,28 @@ export class NotificationService {
     
     async getSchedule(userId: string) {
         return await this.notificationRepository.getSchedule(userId);
+    }
+
+    async deleteSchedule(userId : string,scheduleId : string){
+        const schedule = await this.scheduleRepository.findOne({where : {id : scheduleId}});
+        if(!schedule) throw new NotFoundException();
+        else{
+            if(schedule.userId != userId){
+                throw new UnauthorizedException();
+            }else{
+                await this.scheduleRepository.delete(schedule.id);
+                try{
+                    const job: CronJob = this.schedulerRegistry.getCronJob(scheduleId);
+                    job.stop();
+                    this.schedulerRegistry.deleteCronJob(scheduleId);
+                }catch(error){
+                    console.log(error)
+                }
+        
+                return {
+                    "message" : "deleted"
+                }
+            }
+        }
     }
 }

@@ -3,11 +3,13 @@ import { GoogleGuard } from "./google.guard";
 import { GoogleService } from "./google.service";
 import { Request } from "express";
 import { JwtService } from "@nestjs/jwt";
+import { AuthService } from "../auth.service";
+import { User } from "src/database/entities/user.entity";
 @Controller('auth')
 export class GoogleController {
     constructor(
         private readonly googleService: GoogleService,
-        private readonly jwtService: JwtService
+        private readonly authService : AuthService
     ) { }
 
     @Get('google')
@@ -20,14 +22,16 @@ export class GoogleController {
     @Get('google-redirect')
     @UseGuards(GoogleGuard)
     googleAuthRedirect(@Req() req: Request) {
-        const user = req.user;
+        const user = req.user as User;
         if (!user || typeof user !== 'object') {
             throw new Error('Invalid user data');
         }
         console.log("AO VCL");
-        const accessToken = this.jwtService.sign({...user},{secret : process.env.ACCESS_TOKEN_SECRET});
-        console.log("ACCESS TOKEN : ", accessToken);
-        return { accessToken };
+        const accessToken = this.authService.generateAccessToken({userId : user.id});
+        const refreshToken = this.authService.generateRefreshToken({userId : user.id});
+        return {
+            accessToken,refreshToken
+        }
     }
 
     @Get('status')

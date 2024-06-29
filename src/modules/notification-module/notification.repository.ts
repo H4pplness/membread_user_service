@@ -27,7 +27,7 @@ export class NotificationRepository extends Repository<Notification> {
         schedule.userId = userId;
         schedule.courseId = createSchedule.courseId;
         if (createSchedule.scheduledDate) {
-            schedule.scheduledDate = new Date(schedule.scheduledDate);
+            schedule.scheduledDate = new Date(createSchedule.scheduledDate);
         } else {
             schedule.eachSunday = createSchedule.eachSunday;
             schedule.eachMonday = createSchedule.eachMonday;
@@ -42,11 +42,35 @@ export class NotificationRepository extends Repository<Notification> {
     }
 
     async getSchedule(userId: string) {
-        return await this.scheduleNotificationRepository.find({
-            select: ['id', 'title', 'body', 'time', 'eachFriday', 'eachMonday', 'eachSaturday', 'eachSunday', 'eachThursday', 'eachTuesday', 'eachWednesday', 'scheduledDate','courseId'],
+        const schedules = await this.scheduleNotificationRepository.find({
+            select: ['id', 'title', 'body', 'time', 'eachFriday', 'eachMonday', 'eachSaturday', 'eachSunday', 'eachThursday', 'eachTuesday', 'eachWednesday', 'scheduledDate', 'courseId'],
             where: { userId },
         });
+    
+        return schedules.map(schedule => {
+            return {
+                id: schedule.id,
+                title: schedule.title,
+                body: schedule.body,
+                time: schedule.time,
+                eachFriday: schedule.eachFriday,
+                eachMonday: schedule.eachMonday,
+                eachSaturday: schedule.eachSaturday,
+                eachSunday: schedule.eachSunday,
+                eachThursday: schedule.eachThursday,
+                eachTuesday: schedule.eachTuesday,
+                eachWednesday: schedule.eachWednesday,
+                scheduledDate:schedule.scheduledDate != null ? this.formatDate(schedule.scheduledDate) : null,
+                courseId: schedule.courseId
+            };
+        });
     }
-
+    
+    private formatDate(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
 }

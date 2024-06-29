@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { NotificationService } from "./notification.service";
 import { SendingNotificationDTO } from "src/dtos/sendingnotification.dto";
 import { Validate } from "class-validator";
@@ -31,5 +31,11 @@ export class NotificationController {
     @UseGuards(AuthGuard('jwt'))
     getSchedule(@Req() req){
         return this.notificationService.getSchedule(req.user.userId);
+    }
+
+    @Delete('schedule')
+    @UseGuards(AuthGuard('jwt'))
+    deleteSchedule(@Req() req ,@Body() body : {scheduleId : string} ){
+        return this.notificationService.deleteSchedule(req.user.userId,body.scheduleId);
     }
 }
